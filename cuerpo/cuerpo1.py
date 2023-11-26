@@ -303,8 +303,9 @@ while True:
     # Flip the image horizontally for a selfie-view display.
     #cv2.imshow('MediaPipe Pose', cv2.flip(image, 1))
     if resultsh.multi_hand_landmarks and resultsp.pose_landmarks is not None:
-      #for pose_landmarks in resultsp.pose_landmarks:  
+
         for hand_landmarks in resultsh.multi_hand_landmarks:
+           for pose_landmarks in resultsp.pose_landmarks:
             x = int(hand_landmarks.landmark[9].x * width)
             y = int(hand_landmarks.landmark[9].y * height)
             xm = np.interp(x, (X_Y_INI, X_Y_INI + area_width), (SCREEN_GAME_X_INI, SCREEN_GAME_X_FIN))
