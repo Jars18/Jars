@@ -6,13 +6,13 @@ import time
 
 mp_drawing = mp.solutions.drawing_utils
 mp_holistic = mp.solutions.holistic
-
+mp_drawing_styles = mp.solutions.drawing_styles
 
 mp_hands = mp.solutions.hands
 
 color_mouse_pointer = (255, 0, 255)
 #cap = cv2.VideoCapture("video_0001.mp4")
-cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 #puntos en x,y de todos los puntos de la mano
 
 
@@ -159,6 +159,41 @@ def detect_word_no(hand_landmarks):
      cv2.line(output, (x_h0, y_h0), (x_h8, y_h8), color_h8, 3)
      return word_no
 
+def detect_word_tos(hand_landmarks,pose_landmarks):
+     word_tos = False
+     color_base = (255, 0, 112)
+     color_h8 = (255, 198, 82)
+     #comando para la palabra "no"
+     x_h5 = int(hand_landmarks.landmark[5].x * width) #posicion en x de hand 5
+     y_h5 = int(hand_landmarks.landmark[5].y * height) #posicion en y de hand 5
+     x_h6 = int(hand_landmarks.landmark[6].x * width) #posicion en x de hand 6
+     y_h6 = int(hand_landmarks.landmark[6].y * height) #posicion en y de hand 6
+     x_p10 = int(pose_landmarks.landmark[10].x * width) #posicion en x de hand 5
+     y_p10 = int(pose_landmarks.landmark[10].y * height) #posicion en y de hand 5
+     x_p9 = int(pose_landmarks.landmark[9].x * width) #posicion en x de hand 6
+     y_p9 = int(pose_landmarks.landmark[9].y * height) #posicion en y de hand 6  
+     x_p5 = int(pose_landmarks.landmark[5].x * width) #posicion en x de hand 6
+     y_p5 = int(pose_landmarks.landmark[5].y * height) #posicion en y de hand 6     
+     #distancias de la muñeca a puntos de la mano
+     d_base_h6_p10 = calculate_distance(x_h6, y_h6, x_p10, y_p10) #distancia de 0 a 4 (mano)
+     d_base_h5_p9 = calculate_distance(x_h5, y_h5, x_p9, y_p9) #distancia de 0 a 4 (mano)
+     d_base_p10_p5 = calculate_distance(x_p10, y_p10, x_p5, y_p5) #distancia de 0 a 6 (mano)
+     if d_base_h6_p10 < d_base_p10_p5 and d_base_h6_p10 < d_base_h5_p9:
+        word_tos = True
+        color_base = (255, 0, 255)
+        color_h8 = (255, 0, 255)
+     cv2.circle(output, (x_h0, y_h0), 5, color_base, 2)
+     cv2.circle(output, (x_h8, y_h8), 5, color_h8, 2)
+     cv2.circle(output, (x_h4, y_h4), 5, color_h8, 2)
+     cv2.circle(output, (x_h8, y_h6), 5, color_h8, 2)
+     cv2.circle(output, (x_h8, y_h5), 5, color_h8, 2)
+     cv2.line(output, (x_h0, y_h0), (x_h5, y_h5), color_base, 3)
+     cv2.line(output, (x_h0, y_h0), (x_h8, y_h8), color_h8, 3)
+     cv2.line(output, (x_h0, y_h0), (x_h5, y_h5), color_base, 3)
+     cv2.line(output, (x_h0, y_h0), (x_h8, y_h8), color_h8, 3)
+     return word_tos
+
+
 #####PARA MOSTRAR PUNTOS DEL CUERPO
 with mp_holistic.Holistic(
      static_image_mode=False,
@@ -202,7 +237,8 @@ with mp_holistic.Holistic(
 
 mp_drawing = mp.solutions.drawing_utils
 mp_hands = mp.solutions.hands
-cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+mp_pose = mp.solutions.pose
+#cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 color_mouse_pointer = (255, 0, 255)
 # Puntos de la pantalla-juego
 SCREEN_GAME_X_INI = 150
@@ -218,82 +254,81 @@ def calculate_distance(x1, y1, x2, y2):
     return np.linalg.norm(p1 - p2)
 #----------------------------------------------------------------------
 # For webcam input:
-cap = cv2.VideoCapture(0)
-with mp_pose.Pose(
+
+
+# Hands and Pose var definitions
+hands = mp_hands.Hands(
+    static_image_mode=False,
+    max_num_hands=1,
+    min_detection_confidence=0.5)
+pose = mp_pose.Pose(
     min_detection_confidence=0.5,
-    min_tracking_confidence=0.5) as pose:
-  while cap.isOpened():
-    success, image = cap.read()
-    if not success:
-      print("Ignoring empty camera frame.")
-      # If loading a video, use 'break' instead of 'continue'.
-      continue
+    min_tracking_confidence=0.5)
 
-    # To improve performance, optionally mark the image as not writeable to
-    # pass by reference.
-    image.flags.writeable = False
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    resultsp = pose.process(image)
+ret, frame = cap.read()
 
+
+#----------------------------------------------------------------------
+while True:
+    ret, frame = cap.read()
+    if ret == False:
+        break
+    height, width, _ = frame.shape
+    frame = cv2.flip(frame, 1)
+    # Dibujando un área proporcional a la del juego
+    area_width = width - X_Y_INI * 2
+    area_height = int(area_width / aspect_ratio_screen)
+    aux_image = np.zeros(frame.shape, np.uint8)
+    aux_image = cv2.rectangle(aux_image, (X_Y_INI, X_Y_INI), (X_Y_INI + area_width, X_Y_INI +area_height), (255, 0, 0), -1)
+    output = cv2.addWeighted(frame, 1, aux_image, 0.7, 0)
+    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    resultsh = hands.process(frame_rgb)
+    #results = pose.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+   
+    #cv2.imshow('Frame', frame)
+
+        # Data Management
+    #cap = cv2.VideoCapture(0)
+    #image.flags.writeable = False
+    #image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    resultsp = pose.process(output)
     # Draw the pose annotation on the image.
-    image.flags.writeable = True
-    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    #image.flags.writeable = True
+    #image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
     mp_drawing.draw_landmarks(
-        image,
-        results.pose_landmarks,
+        output,
+        resultsp.pose_landmarks,
         mp_pose.POSE_CONNECTIONS,
         landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
     # Flip the image horizontally for a selfie-view display.
-    cv2.imshow('MediaPipe Pose', cv2.flip(image, 1))
-    if cv2.waitKey(5) & 0xFF == 27:
-      break
-cap.release()
-#----------------------------------------------------------------------
-
-with mp_hands.Hands(
-    static_image_mode=False,
-    max_num_hands=1,
-    min_detection_confidence=0.5) as hands:
-    while True:
-        ret, frame = cap.read()
-        if ret == False:
-            break
-        height, width, _ = frame.shape
-        frame = cv2.flip(frame, 1)
-        # Dibujando un área proporcional a la del juego
-        area_width = width - X_Y_INI * 2
-        area_height = int(area_width / aspect_ratio_screen)
-        aux_image = np.zeros(frame.shape, np.uint8)
-        aux_image = cv2.rectangle(aux_image, (X_Y_INI, X_Y_INI), (X_Y_INI + area_width, X_Y_INI +area_height), (255, 0, 0), -1)
-        output = cv2.addWeighted(frame, 1, aux_image, 0.7, 0)
-        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        results = hands.process(frame_rgb)
-        #results = pose.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-
-
-        if results.multi_hand_landmarks is not None:
-            for hand_landmarks in results.multi_hand_landmarks:
-                x = int(hand_landmarks.landmark[9].x * width)
-                y = int(hand_landmarks.landmark[9].y * height)
-                xm = np.interp(x, (X_Y_INI, X_Y_INI + area_width), (SCREEN_GAME_X_INI, SCREEN_GAME_X_FIN))
-                ym = np.interp(y, (X_Y_INI, X_Y_INI + area_height), (SCREEN_GAME_Y_INI, SCREEN_GAME_Y_FIN))
-                pyautogui.moveTo(int(xm), int(ym))
-                
-                if detect_word_si(hand_landmarks):
-                    time.sleep(0.05)
-                    pyautogui.click()
-                    cv2.circle(output, (x, y), 10, color_mouse_pointer, 3)
-                    cv2.circle(output, (x, y), 5, color_mouse_pointer, -1)
-                
-                elif detect_word_no(hand_landmarks):
-                    time.sleep(0.05)
-                    pyautogui.click()
-                    cv2.circle(output, (x, y), 10, color_mouse_pointer, 3)
-                    cv2.circle(output, (x, y), 5, color_mouse_pointer, -1)
-        #cv2.imshow('Frame', frame)
-        cv2.imshow('output', output)
-        if cv2.waitKey(1) & 0xFF == 27:
-            break
-
+    #cv2.imshow('MediaPipe Pose', cv2.flip(image, 1))
+    if resultsh.multi_hand_landmarks and resultsp.pose_landmarks is not None:
+      #for pose_landmarks in resultsp.pose_landmarks:  
+        for hand_landmarks in resultsh.multi_hand_landmarks:
+            x = int(hand_landmarks.landmark[9].x * width)
+            y = int(hand_landmarks.landmark[9].y * height)
+            xm = np.interp(x, (X_Y_INI, X_Y_INI + area_width), (SCREEN_GAME_X_INI, SCREEN_GAME_X_FIN))
+            ym = np.interp(y, (X_Y_INI, X_Y_INI + area_height), (SCREEN_GAME_Y_INI, SCREEN_GAME_Y_FIN))
+            pyautogui.moveTo(int(xm), int(ym))
+            
+            if detect_word_si(hand_landmarks):
+                time.sleep(0.05)
+                pyautogui.click()
+                cv2.circle(output, (x, y), 10, color_mouse_pointer, 3)
+                cv2.circle(output, (x, y), 5, color_mouse_pointer, -1)
+            
+            elif detect_word_no(hand_landmarks):
+                time.sleep(0.05)
+                pyautogui.click()
+                cv2.circle(output, (x, y), 10, color_mouse_pointer, 3)
+                cv2.circle(output, (x, y), 5, color_mouse_pointer, -1)
+            elif detect_word_tos(hand_landmarks,pose_landmarks):
+                time.sleep(0.05)
+                pyautogui.click()
+                cv2.circle(output, (x, y), 10, color_mouse_pointer, 3)
+                cv2.circle(output, (x, y), 5, color_mouse_pointer, -1)
+    cv2.imshow('output', output)
+    if cv2.waitKey(1) & 0xFF == 27:
+        break
 cap.release()
 cv2.destroyAllWindows()
