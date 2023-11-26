@@ -3,6 +3,52 @@ import mediapipe as mp
 import numpy as np
 import pyautogui
 import time
+import playsound
+from gtts import gTTS
+
+texto1="¿Hay algun personal del hospital que hable lenguaje de señas?"
+tts=gTTS(text=texto1, lang='es', slow=False)
+tts.save("c:/Users/rocas/iCloudDrive/Hackaton/Jars/sonido1.mp3")
+
+texto2="¡Ayuda!, socorro a victima de violencia sexual y/o género"
+tts=gTTS(text=texto2, lang='es', slow=False)
+tts.save("c:/Users/rocas/iCloudDrive/Hackaton/Jars/sonido2.mp3")
+
+texto3="Emergencia, mujer cerca del alumbramiento"
+tts=gTTS(text=texto3, lang='es', slow=False)
+tts.save("c:/Users/rocas/iCloudDrive/Hackaton/Jars/sonido3.mp3")
+
+texto4="¿Podria visitar a mi familiar enfermo en este horario?"
+tts=gTTS(text=texto4, lang='es', slow=False)
+tts.save("c:/Users/rocas/iCloudDrive/Hackaton/Jars/sonido4.mp3")
+
+texto5="¿Donde se encuentra el lugar de informaciones?"
+tts=gTTS(text=texto5, lang='es', slow=False)
+tts.save("c:/Users/rocas/iCloudDrive/Hackaton/Jars/sonido5.mp3")
+
+texto6="¿En que horarios se puede sacar una cita y que requiero para una?"
+tts=gTTS(text=texto6, lang='es', slow=False)
+tts.save("c:/Users/rocas/iCloudDrive/Hackaton/Jars/sonido6.mp3")
+
+texto7="¿Podria llamar a la enfermera?"
+tts=gTTS(text=texto7, lang='es', slow=False)
+tts.save("c:/Users/rocas/iCloudDrive/Hackaton/Jars/sonido7.mp3")
+
+texto8="Tengo una cita medica a esta hora"
+tts=gTTS(text=texto8, lang='es', slow=False)
+tts.save("c:/Users/rocas/iCloudDrive/Hackaton/Jars/sonido8.mp3")
+
+texto9="No me siento bien, ¿donde queda emergencias?"
+tts=gTTS(text=texto9, lang='es', slow=False)
+tts.save("c:/Users/rocas/iCloudDrive/Hackaton/Jars/sonido9.mp3")
+
+textosi="Si"
+tts=gTTS(text=textosi, lang='es', slow=False)
+tts.save("c:/Users/rocas/iCloudDrive/Hackaton/Jars/sonidosi.mp3")
+
+textono="No"
+tts=gTTS(text=textono, lang='es', slow=False)
+tts.save("c:/Users/rocas/iCloudDrive/Hackaton/Jars/sonidono.mp3")
 
 mp_drawing = mp.solutions.drawing_utils
 mp_holistic = mp.solutions.holistic
@@ -611,68 +657,89 @@ with mp_hands.Hands(
                 pyautogui.moveTo(int(xm), int(ym))
                 
                 if detect_word_si(hand_landmarks):
-                    time.sleep(0.05)
+                    time.sleep(1)
+                    playsound.playsound("c:/Users/rocas/iCloudDrive/Hackaton/Jars/sonidosi.mp3", True)
+                    time.sleep(1)
                     print("si")
                     #pyautogui.click()
                     cv2.circle(output, (x, y), 10, color_mouse_pointer, 3)
                     cv2.circle(output, (x, y), 5, color_mouse_pointer, -1)
                 
-                elif detect_word_no(hand_landmarks):
-                    time.sleep(0.05)
+                if detect_word_no(hand_landmarks):
+                    time.sleep(1)
+                    playsound.playsound("c:/Users/rocas/iCloudDrive/Hackaton/Jars/sonidono.mp3", True)
+                    time.sleep(1)
                     print("no")
                     #pyautogui.click()
                     cv2.circle(output, (x, y), 10, color_mouse_pointer, 3)
                     cv2.circle(output, (x, y), 5, color_mouse_pointer, -1)
-                elif detect_num_uno(hand_landmarks):
-                    time.sleep(0.05)
+                if detect_num_uno(hand_landmarks):
+                    time.sleep(1)
+                    playsound.playsound("c:/Users/rocas/iCloudDrive/Hackaton/Jars/sonido1.mp3", True)
+                    time.sleep(1)
                     print("uno")
                     #pyautogui.click()
                     cv2.circle(output, (x, y), 10, color_mouse_pointer, 3)
                     cv2.circle(output, (x, y), 5, color_mouse_pointer, -1)
-                elif detect_num_dos(hand_landmarks):
-                    time.sleep(0.05)
+                if detect_num_dos(hand_landmarks):
+                    time.sleep(1)
+                    playsound.playsound("c:/Users/rocas/iCloudDrive/Hackaton/Jars/sonido2.mp3", True)
+                    time.sleep(1)
                     print("dos")
                     #pyautogui.click()
                     cv2.circle(output, (x, y), 10, color_mouse_pointer, 3)
                     cv2.circle(output, (x, y), 5, color_mouse_pointer, -1)
-                elif detect_num_tres(hand_landmarks):
-                    time.sleep(0.05)
+                if detect_num_tres(hand_landmarks):
+                    time.sleep(1)
+                    playsound.playsound("c:/Users/rocas/iCloudDrive/Hackaton/Jars/sonido3.mp3", True)
+                    time.sleep(1)
                     print("tres")
                     #pyautogui.click()
                     cv2.circle(output, (x, y), 10, color_mouse_pointer, 3)
                     cv2.circle(output, (x, y), 5, color_mouse_pointer, -1)
-                elif detect_num_cuatro(hand_landmarks):
-                    time.sleep(0.05)
+                if detect_num_cuatro(hand_landmarks):
+                    time.sleep(1)
+                    playsound.playsound("c:/Users/rocas/iCloudDrive/Hackaton/Jars/sonido4.mp3", True)
+                    time.sleep(1)
                     print("cuatro")
                     #pyautogui.click()
                     cv2.circle(output, (x, y), 10, color_mouse_pointer, 3)
                     cv2.circle(output, (x, y), 5, color_mouse_pointer, -1)
-                elif detect_num_cinco(hand_landmarks):
+                if detect_num_cinco(hand_landmarks):
                     time.sleep(0.05)
                     print("cinco")
+
                     #pyautogui.click()
                     cv2.circle(output, (x, y), 10, color_mouse_pointer, 3)
                     cv2.circle(output, (x, y), 5, color_mouse_pointer, -1)
-                elif detect_num_seis(hand_landmarks):
-                    time.sleep(0.05)
+                if detect_num_seis(hand_landmarks):
+                    time.sleep(1)
+                    playsound.playsound("c:/Users/rocas/iCloudDrive/Hackaton/Jars/sonido6.mp3", True)
+                    time.sleep(1)
                     print("seis")
                     #pyautogui.click()
                     cv2.circle(output, (x, y), 10, color_mouse_pointer, 3)
                     cv2.circle(output, (x, y), 5, color_mouse_pointer, -1)
-                elif detect_num_siete(hand_landmarks):
-                    time.sleep(0.05)
+                if detect_num_siete(hand_landmarks):
+                    time.sleep(1)
+                    playsound.playsound("c:/Users/rocas/iCloudDrive/Hackaton/Jars/sonido7.mp3", True)
+                    time.sleep(1)
                     print("siete")
                     #pyautogui.click()
                     cv2.circle(output, (x, y), 10, color_mouse_pointer, 3)
                     cv2.circle(output, (x, y), 5, color_mouse_pointer, -1)
-                elif detect_num_ocho(hand_landmarks):
-                    time.sleep(0.05)
+                if detect_num_ocho(hand_landmarks):
+                    time.sleep(1)
+                    playsound.playsound("c:/Users/rocas/iCloudDrive/Hackaton/Jars/sonido8.mp3", True)
+                    time.sleep(1)
                     print("ocho")
                     #pyautogui.click()
                     cv2.circle(output, (x, y), 10, color_mouse_pointer, 3)
                     cv2.circle(output, (x, y), 5, color_mouse_pointer, -1)
-                elif detect_num_nueve(hand_landmarks):
-                    time.sleep(0.05)
+                if detect_num_nueve(hand_landmarks):
+                    time.sleep(1)
+                    playsound.playsound("c:/Users/rocas/iCloudDrive/Hackaton/Jars/sonido9.mp3", True)
+                    time.sleep(1)
                     print("nueve")
                     #pyautogui.click()
                     cv2.circle(output, (x, y), 10, color_mouse_pointer, 3)
