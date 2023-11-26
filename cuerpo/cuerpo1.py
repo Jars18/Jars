@@ -159,6 +159,7 @@ def detect_word_no(hand_landmarks):
      cv2.line(output, (x_h0, y_h0), (x_h8, y_h8), color_h8, 3)
      return word_no
 
+#####PARA MOSTRAR PUNTOS DEL CUERPO
 with mp_holistic.Holistic(
      static_image_mode=False,
      model_complexity=1) as holistic:
@@ -196,6 +197,8 @@ with mp_holistic.Holistic(
           cv2.imshow("Frame", frame)
           if cv2.waitKey(1) & 0xFF == 27:
                break
+#FIN DE MUESTRA DE PUNTOS DEL CUERPO
+
 
 mp_drawing = mp.solutions.drawing_utils
 mp_hands = mp.solutions.hands
@@ -232,7 +235,9 @@ with mp_hands.Hands(
         output = cv2.addWeighted(frame, 1, aux_image, 0.7, 0)
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = hands.process(frame_rgb)
-        
+        #results = pose.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+
+
         if results.multi_hand_landmarks is not None:
             for hand_landmarks in results.multi_hand_landmarks:
                 x = int(hand_landmarks.landmark[9].x * width)
